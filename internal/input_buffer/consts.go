@@ -26,6 +26,7 @@ type ExecuteResult int
 const (
 	EXECUTE_SUCCESS ExecuteResult = iota
 	EXECUTE_TABLE_FULL
+	EXECUTE_WRITE_ERROR
 )
 
 const (
@@ -43,5 +44,7 @@ const (
 	PAGE_SIZE       = 4096
 	TABLE_MAX_PAGES = 100
 	ROWS_PER_PAGE   = PAGE_SIZE / ROW_SIZE
-	TABLE_MAX_ROWS  = ROWS_PER_PAGE * TABLE_MAX_PAGES
+)
+const (
+	TABLE_MAX_ROWS = 1000
 )
