@@ -44,7 +44,8 @@ func (Ib *InputBuffer) ReadInput() {
 		case PREPARE_UNRECOGNIZED_STATEMENT:
 			fmt.Printf("Unrecognized keyword at start of %s.\n", Ib.Char)
 		}
-		statement.executeStatement()
+		table := &Table{}
+		statement.executeStatement(table)
 		fmt.Println("Executed")
 	} else if err := scanner.Err(); err != nil {
 

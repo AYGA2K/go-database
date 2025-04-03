@@ -62,6 +62,10 @@ func (st *Statement) executeInsert(table *Table) ExecuteResult {
 		return EXECUTE_TABLE_FULL
 	}
 	rowToInsert := st.rowToInsert
+	page := table.rowSLot(table.numRows)
+	if (page.rows[page.currentRow]==nil){
+         page.rows[page.currentRow]=make([]byte,ROW_SIZE)
+	}
 	rowToInsert.SerializeRow(&table.rowSLot(table.numRows).rows[table.numRows])
 	table.numRows++
 
@@ -96,16 +100,22 @@ func (destination *Row) DeserializeRow(source *[]byte) {
 
 func (table *Table) rowSLot(rowNum uint32) *Page {
 	pageNum := rowNum / ROWS_PER_PAGE
-	if pageNum >= uint32(len(table.pages)) {
+	if pageNum >= TABLE_MAX_PAGES {
 		panic("pageNum out of bounds")
 	}
-	page := table.pages[pageNum]
-	if page == nil {
-		page = new(Page)
+
+	// Initialize the page if it doesn't exist
+	if table.pages[pageNum] == nil {
+		table.pages[pageNum] = &Page{
+			rows:       make([][]byte, ROWS_PER_PAGE), 
+			currentRow: 0,
+			offset:     0,
+		}
 	}
+
 	rowOffset := rowNum % ROWS_PER_PAGE
-	byteOffset := rowOffset * ROW_SIZE
+	page := table.pages[pageNum]
 	page.currentRow = rowNum
-	page.offset = byteOffset
+	page.offset = rowOffset
 	return page
 }
